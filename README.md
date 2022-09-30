@@ -101,7 +101,9 @@ export default List;  <br/>
 
 # Answers: 
 
-## 1Q Answer :
+## 1. Explain what the simple List component does.
+
+## [1Q] Answer :
 
 I will explain the simple List Component in a sequential manner:
 
@@ -129,13 +131,19 @@ Keyboards  aid in establishing and upholding different kinds of honesty. Counter
 
 
 
-## 2Q Answer :
+##  2 . What problems / warnings are there with code?
 
 
+## [2Q] Answer :
 
 
+ 🔰 The warnings or problems in the given code  are as follows:
 
 
+🢂 : ```onClick``` events should have a function reference instead of a function call.
 
 
-
+```  <li style={{ backgroundColor: isSelected ? "green" : "red" }}
+      onClick={onClickHandler(index)}>
+      {text}
+     </li>```
