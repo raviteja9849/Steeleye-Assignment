@@ -140,10 +140,162 @@ Keyboards  aid in establishing and upholding different kinds of honesty. Counter
  🔰 The warnings or problems in the given code  are as follows:
 
 
-🢂 : ```onClick``` events should have a function reference instead of a function call.
+#### 🢂 : ```onClick``` events should have a function reference instead of a function call.
 
 
-```  <li style={{ backgroundColor: isSelected ? "green" : "red" }}
-      onClick={onClickHandler(index)}>
-      {text}
-     </li>```
+```<li style={{ backgroundColor: isSelected ? "green" : "red" }}```<br/>
+```onClick={onClickHandler(index)}>```<br/>
+```{text}``<br/>  
+```</li>```<br/> 
+
+
+
+
+##### 🢂 : The ```useState``` variables is being misplaced. Basically , When we use useState it takes two parameters. The first one is variable and second is a function. 
+
+
+```const [setSelectedIndex, selectedIndex] = useState();``` <br/>
+
+
+
+
+#### 🢂 We can not map null, if we face this issues we can handle it manually, if data is null or something then the page error ocuurs:
+
+```WrappedListComponent.defaultProps = {```<br/>
+  ```items: null,```<br/>
+```};```
+
+
+
+ ##### 🢂 Passing a number ```selectedIndex``` to ```isSelected``` which should be a ```bool```.There was a Missing dynamic key for mapping, If  ```isSelected``` is used ,given a Boolean error handling for null or undefined data, it gives us better error handle and gives better user experience :
+ 
+ ```<ul style={{ textAlign: 'left' }}>```<br/>
+      ```{items.map((item, index) => (```<br/>
+        ```<SingleListItem```<br/>
+          ```onClickHandler={() => handleClick(index)}```<br/>
+          ```text={item.text}```<br/>
+          ```index={index}```<br/>
+          ```isSelected={selectedIndex}```<br/>
+        ```/>```<br/>
+      ```))}```<br/>
+```</ul>```<br/>
+
+
+
+#### 🢂 There was a Syntax errors in the following code:
+
+```WrappedListComponent.propTypes = {```<br/>
+  ```items: PropTypes.array(```<br/>
+    ```PropTypes.shapeOf({```<br/>
+      ```text: PropTypes.string.isRequired,```<br/>
+    ```})```<br/>
+  ```),```<br/>
+```};```<br/>
+ 
+
+## 3. Please fix, optimize, and/or modify the component as much as you think is necessary.
+
+## [3Q] Answer:
+
+
+```import React, { useState, useEffect, memo } from 'react';
+import PropTypes from 'prop-types';
+
+// Single List Item
+const WrappedSingleListItem = ({
+    index,
+    isSelected,
+    onClickHandler,
+    text,
+}) => {
+    return (
+        <li
+            style={{ backgroundColor: isSelected ? 'green' : 'red' }}
+            // onClick={onClickHandler(index)} //There should be a function reference instead of call
+            onClick={() => onClickHandler(index)}
+        >
+            {text}
+        </li>
+    );
+};
+
+WrappedSingleListItem.propTypes = {
+    index: PropTypes.number,
+    isSelected: PropTypes.bool,
+    onClickHandler: PropTypes.func.isRequired,
+    text: PropTypes.string.isRequired,
+};
+
+const SingleListItem = memo(WrappedSingleListItem);
+
+// List Component
+const WrappedListComponent = ({ items, }) => {
+
+    // const [setSelectedIndex, selectedIndex] = useState();the place of selectedIndex & setSelectedIndex should get interchanged.
+    const [selectedIndex, setSelectedIndex] = useState();
+
+    useEffect(() => {
+        setSelectedIndex(null);
+    }, [items]);
+
+    const handleClick = index => {
+        setSelectedIndex(index);
+    };
+
+    return (
+        <ul style={{ textAlign: 'left' }}>
+            {items.map((item, index) => (
+                <SingleListItem
+                    key={index}
+                    onClickHandler={() => handleClick(index)}
+                    text={item.text}
+                    index={index}
+                    // isSelected={selectedIndex}
+                    isSelected={Boolean(selectedIndex)}
+                />
+            ))}
+        </ul>
+    )
+};
+
+// WrappedListComponent.propTypes = {
+//     items: PropTypes.array(PropTypes.shapeOf({
+//         text: PropTypes.string.isRequired,
+//     })),
+// };
+
+//The above code contains some errors, The modified code is shown below
+
+WrappedListComponent.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.shape({
+        text: PropTypes.string.isRequired,
+    }).isRequired
+    ).isRequired
+};
+
+WrappedListComponent.defaultProps = {
+    // items: null //giving null as default prop is never recommended
+    items: undefined 
+};
+
+const List = memo(WrappedListComponent);
+
+export default List;```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
